@@ -1,3 +1,7 @@
 1) Laravel Scheduler
 -----------------
 https://appdividend.com/2018/03/01/laravel-cronjob-scheduling-tutorial/
+
+cronjob
+=======
+/usr/local/bin/php /public_html/dev/artisan schedule:run >> /dev/NULL 2>&1

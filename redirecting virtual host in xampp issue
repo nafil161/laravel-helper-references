@@ -1,5 +1,4 @@
 
-
 Are You encountering a Redirect to xampp/dashboard every vhost set for a laravel project.
 
 here is the solution
@@ -8,9 +7,11 @@ here is the solution
 The issue mainly because of the ssl not setup for the project named host
 
 solution video link : 
-<a href="">https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project</a>
+=====================
+https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project
 
 Eg : vhost sample
+=================
 
 <VirtualHost 127.0.0.2:80>
 	DocumentRoot "C:/xampp/htdocs/laravel-project/public"

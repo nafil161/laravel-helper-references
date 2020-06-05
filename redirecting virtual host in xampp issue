@@ -1,0 +1,38 @@
+https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project
+
+Are You encountering a Redirect to xampp/dashboard every vhost set for a laravel project.
+
+here is the solution
+====================
+
+The issue mainly because of the ssl not setup for the project named host
+
+solution video link : https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project
+
+Eg : vhost sample
+
+<VirtualHost 127.0.0.2:80>
+	DocumentRoot "C:/xampp/htdocs/laravel-project/public"
+	DirectoryIndex index.php
+	ServerName laravel.local
+	<Directory "C:/xampp/htdocs/laravel-project/public">
+		Options All
+		AllowOverride All
+		Require all granted
+	</Directory>
+</VirtualHost>
+
+<VirtualHost 127.0.0.2:443>
+	DocumentRoot "C:/xampp/htdocs/laravel-project/public"
+	DirectoryIndex index.php
+	SSLEngine on
+	SSLCertificateFile "conf/ssl.crt/server.crt"
+	SSLCertificateKeyFile "conf/ssl.key/server.key"
+
+	ServerName laravel.local
+	<Directory "C:/xampp/htdocs/laravel-project/public">
+		Options All
+		AllowOverride All
+		Require all granted
+	</Directory>
+</VirtualHost>

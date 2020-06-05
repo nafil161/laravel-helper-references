@@ -1,4 +1,4 @@
-https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project
+
 
 Are You encountering a Redirect to xampp/dashboard every vhost set for a laravel project.
 
@@ -7,7 +7,8 @@ here is the solution
 
 The issue mainly because of the ssl not setup for the project named host
 
-solution video link : https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project
+solution video link : 
+<a href="">https://ourcodeworld.com/articles/read/198/enabling-ssl-https-protocol-with-xampp-in-a-local-php-project</a>
 
 Eg : vhost sample
 

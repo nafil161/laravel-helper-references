@@ -1,0 +1,141 @@
+Steps for Implementing Pusher
+=============================
+
+1) Register a pusher account and get and update in .env
+
+PUSHER_APP_ID=xxxx
+PUSHER_APP_KEY=xxxx
+PUSHER_APP_SECRET=xxxx
+PUSHER_APP_CLUSTER=xxxx
+
+2) also add a mix value given below in .env
+   ---------------------------------
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+3) update .env as BROADCAST_DRIVER=pusher
+
+4) update option in Config/Broadcasting.php look like 
+    'pusher' => [
+            'driver' => 'pusher',
+            'key' => env('PUSHER_APP_KEY'),
+            'secret' => env('PUSHER_APP_SECRET'),
+            'app_id' => env('PUSHER_APP_ID'),
+            'options' => [
+                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'useTLS' => true
+            ],
+        ],
+
+5) run composer commands for 
+    "pusher/pusher-php-server": "^4.1",
+    
+6) update config/app.php by uncommenting 
+    App\Providers\BroadcastServiceProvider::class
+
+7) npm packages
+    "laravel-echo": "^1.9.0",
+    "push.js": "^1.0.12", ( used for browser push notification ie, desktop notification service)
+    "pusher-js": "^7.0.1",
+    
+8) update resources/assets/js/app.js
+    
+    import Echo from "laravel-echo";
+
+    import Pusher from 'pusher-js';
+    window.Pusher = Pusher;
+
+    import Push from 'push.js';
+    window.Push = Push;
+
+    window.Echo = new Echo({
+      broadcaster: 'pusher',
+      key: process.env.MIX_PUSHER_APP_KEY,
+      cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+      encrypted: true
+    });
+    
+9) declare a function in any js file or in webpack mix js file - function for desktop notifcation
+    window.pushNotification = function(data){
+      Push.create("You have new Notification", {
+        body: data.message,
+        icon: '/images/favicon.ico',
+        timeout: 5000,
+        onClick: function () {
+          window.location = '/activities';
+          this.close();
+        }
+      });
+    } 
+    
+10) Event listener - add this code to layout.app.blade - for getting in every page the notification
+    <script>
+			Echo.private('App.User.{{Sentinel::getUser()->id}}')
+			.listen('NewNotification', (e) => {
+				pushNotification(e);
+			});
+		</script>
+     
+    Here Echo.Private used because only authorized login user can get the notification. Here App.User.{{Sentinel::getUser()->id}} is the channel and this channel validationg in routes/channel.php 
+ 
+ 11) routes/channels.php - here every broadcasting channels will be registered and validated 
+    Broadcast::channel('App.User.{id}', function ($user, $id) {
+        return (int) $user->id === (int) $id;	    return (int) $user->id === (int) $id;
+    });	});
+
+12) Create an Event using 
+
+    php artisan make:event NewNotification
+    
+13) update the event file like
+
+    <?php
+
+      namespace App\Events;
+
+      use Illuminate\Broadcasting\Channel;
+      use Illuminate\Queue\SerializesModels;
+      use Illuminate\Broadcasting\PrivateChannel;
+      use Illuminate\Broadcasting\PresenceChannel;
+      use Illuminate\Foundation\Events\Dispatchable;
+      use Illuminate\Broadcasting\InteractsWithSockets;
+      use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+      use App\User;
+
+      class NewNotification implements ShouldBroadcast
+      {
+          use Dispatchable, InteractsWithSockets, SerializesModels;
+
+          public $user;
+          public $message;
+          /**
+           * Create a new event instance.
+           *
+           * @return void
+           */
+          // User $user,
+          public function __construct(User $user,$message)
+          {
+              $this->user = $user;
+              $this->message  = $message;
+          }
+
+          /**
+           * Get the channels the event should broadcast on.
+           *
+           * @return \Illuminate\Broadcasting\Channel|array
+           */
+          public function broadcastOn()
+          {
+              return new PrivateChannel('App.User.'.$this->user->id);
+          }
+      }
+
+
+14) Sample Event call from any php function we need to push a pusher event 
+    $message = 'Hai This is a sample Message';
+    event(new NewNotification($user,$message));
+
+
+
+

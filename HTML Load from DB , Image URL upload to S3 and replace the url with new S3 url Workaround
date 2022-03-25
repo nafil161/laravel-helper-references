@@ -1,0 +1,38 @@
+$faqs = Faq::get();
+
+        $faqNo = 1; 
+
+        foreach($faqs as $faq) {
+            $doc = new DOMDocument();
+            $doc->loadHTML($faq->description);
+            $tags = $doc->getElementsByTagName('img');
+
+            foreach ($tags as $tag) {
+
+                $imgUrl = $tag->getAttribute('src');
+                // $file = file_get_contents($imgUrl);
+                $random = Str::random(10);  
+                $imageName = 'faq_image_'.time().'-'.$random.'.png';
+
+                $s3 = Storage::disk('s3');
+                $filePath = 'faq/'.$imageName;
+
+                $response = $s3->put($filePath, file_get_contents($imgUrl), 'public');
+
+                if($response == 1) {
+                    $newUrl = Storage::disk('s3')->url($filePath);
+                    // $faqImageArr = ['id' => $faq->id, 'old_link' => $imgUrl, 'new_link' => $newUrl];
+                    // $faqArr[] = $faqImageArr;
+                    $tag->removeAttribute('src');
+                    $tag->setAttribute('src', $newUrl);
+
+                }
+            }
+            $faq->description = $doc->saveHTML();
+            $faq->save();
+            // return $imageReplaceArray[] = $faqArr;
+            // return 'test';  
+            Echo $faq->id.' '.$faq->title.' <br>';  
+            $faqNo++; 
+        }
+        return 'All ' .$faqNo. ' done';

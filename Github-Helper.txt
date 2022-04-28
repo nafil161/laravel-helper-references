@@ -1,0 +1,9 @@
+Situation
+- If a branch need to revert to a commit which is 2 weeks old . we are ok to delete all changes after that. then use these code
+
+checkout to the branch were you have to go to a specific commit
+git reset --hard 37a595396eb6b3892acd00a687b3cf12ac4da7a9
+git push origin production -f
+
+* here 37a595396eb6b3892acd00a687b3cf12ac4da7a9 is commit-id
+*production is the branch
